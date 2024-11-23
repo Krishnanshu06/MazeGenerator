@@ -9,8 +9,8 @@ class Frontier():
     def __init__(self):
         self.frontier = []
 
-    def add(self , cell):
-        self.frontier.append(cell)
+    def add(self , Cell):
+        self.frontier.append(Cell)
     
     def checkForCell(self , Cell):
         return any(cell.position == Cell.position for cell in self.frontier)
@@ -19,7 +19,7 @@ class Frontier():
         if len(self.frontier) == 0:
             return True
         else:
-            return False        
+            return False
     
 class Stackfrontier(Frontier):
 
@@ -42,60 +42,59 @@ class Queuefrontier(Frontier):
             return selectedCell
 
 class Maze():
-    def __init__(self , NoOfRows , NoOfColumns , StartCoords , FinishCoords):
-
+    def __init__(self , NoOfRows , NoOfColumns ,StartCoords , FinishCoords ):
+        
         self.maze = []
 
 
-        self.MazeHeight = NoOfRows
-        self.MazeWidth = NoOfColumns
+        self.MazeHeight = NoOfRows + 2   # this is the number of cells including the borders
+        self.MazeWidth = NoOfColumns + 2  # this also includes the borders
 
 
-
-        for row in range(self.MazeHeight + 1):
+        for row in range(self.MazeHeight):
             tempRow = []
-            for col in range(self.MazeWidth + 1):
-                tempRow.append('#')
+            for col in range(self.MazeWidth): 
+                tempRow.append('#') 
             self.maze.append(tempRow)
 
 
-        for row in self.maze:
+        for row in self.maze:                     ##########
             print(row)
+
+        self.DugCells = []
+
+        self.startCoords = (StartCoords[0] + 1 , StartCoords[1] + 1)
+        self.finishCoords = (FinishCoords[0] + 1 , FinishCoords[1] + 1)
         
-        self.DugCells = set()
-
-        self.startCoords = (StartCoords[0] , StartCoords[1])
-        self.finishCoords = (FinishCoords[0] , FinishCoords[1])
-
-        self.DugCells.add(self.finishCoords)
-        self.DugCells.add(self.startCoords)
+        self.DugCells.append(self.finishCoords)
+        self.DugCells.append(self.startCoords)
+        
 
 
-
-        print(self.startCoords , self.finishCoords)
+        print(self.startCoords , self.finishCoords)  ###########
 
         self.maze[int(self.startCoords[1])][int(self.startCoords[0])] = 'A'
         self.maze[int(self.finishCoords[1])][int(self.finishCoords[0])] = 'B'
 
-        for row in self.maze:
+        for row in self.maze:                     ##############
             print(row)
 
 
         self.isBorder = []
-
-        for r , row in enumerate(self.maze):
+        
+        for r, row in enumerate(self.maze):
             tempRoww = []
             for c , col in enumerate(row):
-
-                if r  == 0 or r == self.MazeHeight or c == 0 or c == self.MazeWidth:
+                
+                if r == 0 or r == self.MazeHeight - 1 or c == 0 or c == self.MazeWidth - 1:
                     tempRoww.append(True)
                 else:
                     tempRoww.append(False)
             self.isBorder.append(tempRoww)
-
+    
         for row in self.isBorder:
             print(row)
-
+    
     def getRandom(self):
         mylist = ["left","right", "down", "up"]
         lis = [1,2,3,4]
@@ -105,8 +104,30 @@ class Maze():
 
         choices = random.choices(mylist ,k = k)
         choicesSet = set(choices)
-        return list(choicesSet)        
+        return list(choicesSet)
 
+    def checkAdjecent(self , miner):
+
+        (row , col) = miner.position
+
+        adjUp = (row - 1 , col)
+        adjRight = (row, col + 1)
+        adjLeft = (row, col - 1)
+        adjDown = (row + 1 , col)
+
+        adjCells = []
+
+        if self.isBorder[adjUp[0]][adjUp[1]] != True and adjUp not in self.DugCells:
+            adjCells.append(adjUp)
+        if self.isBorder[adjDown[0]][adjDown[1]] != True and adjDown not in self.DugCells:
+            adjCells.append(adjDown)
+        if self.isBorder[adjLeft[0]][adjLeft[1]] != True and adjLeft not in self.DugCells:
+            adjCells.append(adjLeft)
+        if self.isBorder[adjRight[0]][adjRight[1]] != True and adjRight not in self.DugCells:
+            adjCells.append(adjRight)
+
+        return adjCells
+    
     def checkSquare(self,pos):         # have to fix this
         
         (row , col) = pos
@@ -134,62 +155,67 @@ class Maze():
             canDoDL = False
         
         if [canDoUR,canDoDR,canDoUL,canDoDL] == [False , False , False , False]:
-            return True
+            return False
         
         else:
-            return False
-    
+            return True
 
     def conditionNeighbours(self,ranPos,pos):
         c = [
-                0 < ranPos[0] <= self.MazeHeight ,#1
-                0 < ranPos[1] <= self.MazeWidth , #2
-                ranPos not in self.DugCells ,     #3
-                
+                0 < ranPos[0] < self.MazeHeight ,#1
+                0 < ranPos[1] < self.MazeWidth , #2
+                ranPos not in self.DugCells ,    #3
+                self.checkSquare(pos) == True    #4
 
             ]
+        
+        
 
         if (c[0] and c[1]):
-            if (self.isBorder[ranPos[0]][ranPos[1]] == False and c[2]):
+            if (self.isBorder[ranPos[0] - 1][ranPos[1] - 1] == False and c[2] and c[3]):
                 print('all conditions met')
                 return True
             else:
                 print('rejected 2 , 3')
-                return False  
+                return False
+        
+
         else:
-            print('Rejected 0 , 1')  
+            print('Rejected 0 , 1')
             return False
-
-
-
+        
     def findingNeighbours(self , miner):
-        (ro , co) = miner.position
-        pos = (ro , co)
+        (row , col) = miner.position
+        pos = (row + 1 ,col + 1 )
 
         print('current cell pos:' , pos)
 
+
+        row = row + 1
+        col = col + 1
+
         posNbr = {
-            'up' : (ro - 1 , co),
-            'down' : (ro + 1 , co),
-            'left' : (ro , co - 1),
-            'right' : (ro , co + 1)
+            'up' : (row - 1 , col),
+            'down' : (row + 1 , col),
+            'left' : (row , col - 1),
+            'right' : (row , col + 1)
         }
 
         randomSelectedNeighbour = []
         for c in self.getRandom():
             randomSelectedNeighbour.append(posNbr[c])
             
-        print('RandomNeighbours list:' , randomSelectedNeighbour)
 
         selectedNeighbours = []
         for ranPos in randomSelectedNeighbour:
+            print('RandomNeighbours list:' , randomSelectedNeighbour)
             print('random selected:',ranPos)
             if self.conditionNeighbours(ranPos,pos):
                 
                 selectedNeighbours.append(ranPos)
                 print('selected: ',selectedNeighbours)
         return selectedNeighbours
-           
+    
 
     def generator(self):
 
@@ -199,6 +225,8 @@ class Maze():
 
         frontier.add(startMiner)
 
+        self.exploredSet = set()
+
         while True:
 
             if frontier.isEmpty():
@@ -207,22 +235,25 @@ class Maze():
                     print(row)
 
             CurrentCell = frontier.remove()
-            print(CurrentCell.position)
-            if self.checkSquare(CurrentCell.position):
-                continue
 
-            self.DugCells.add(CurrentCell.position)
+            self.exploredSet.add(CurrentCell.position)
+            self.DugCells.append(CurrentCell.position)
+            print('dug:' ,self.exploredSet)
 
-            print('Dug: ',self.DugCells)
 
             for location in self.findingNeighbours(CurrentCell):
-                print(' ')
-                if not frontier.checkForCell(CurrentCell):
-                    print('loc : ',location)
-                    frontier.add(Miner(position= location))
+                if location not in self.exploredSet and not frontier.checkForCell(CurrentCell):
+                    frontier.add(Miner(position = location ))
                     self.maze[location[0]][location[1]] = ' '
                     for row in self.maze:
                         print(row)
+                
+
+
+
+
+        
+        
 
 
 
@@ -233,31 +264,18 @@ class Maze():
 
 
 
-
-
-
-
-
-
-a = Maze(5,5,[1,1],[4,4])    # [5,5] --> 0 to 5 row and columns
+a = Maze(5,5,[1,1],[4,4])
 b = Miner((1,1))
 c = a.findingNeighbours(b)
 d = a.maze
-
+print(d)
 print(c)
 
-#for k in c:
-#    d[k[0]][k[1]] = ' '
+for k in c:
+    d[k[0]][k[1]] = ' '
 
 for row in d:
 
     print (row)
 
 a.generator()
-
-# # # # # # 
-# # # # # # 
-# # # # # # 
-# # # # # # 
-# # # # # # 
-# # # # # # 
