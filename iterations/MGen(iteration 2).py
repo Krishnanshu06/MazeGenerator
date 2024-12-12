@@ -230,15 +230,6 @@ class Maze():
 
 
 
-
-
-
-
-
-
-
-
-
 a = Maze(5,5,[1,1],[4,4])    # [5,5] --> 0 to 5 row and columns
 b = Miner((1,1))
 c = a.findingNeighbours(b)
@@ -255,9 +246,19 @@ for row in d:
 
 a.generator()
 
+
+
 # # # # # # 
 # # # # # # 
 # # # # # # 
 # # # # # # 
 # # # # # # 
 # # # # # # 
+
+
+
+
+
+
+
+
