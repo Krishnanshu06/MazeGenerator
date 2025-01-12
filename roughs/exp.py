@@ -1,6 +1,3 @@
-se = set()
-se.add([1,1])
-print(se)
-
-s = (2,2)
-print(type(s))
+import random
+choices = random.choices([] ,k = 4)
+print(choices)

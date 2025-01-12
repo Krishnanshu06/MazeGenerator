@@ -11,16 +11,16 @@ class Frontier():
 
     def add(self , cell):
         self.frontier.append(cell)
-    
+
     def checkForCell(self , Cell):
         return any(cell.position == Cell.position for cell in self.frontier)
-    
+
     def isEmpty(self):
         if len(self.frontier) == 0:
             return True
         else:
-            return False        
-    
+            return False
+
 class Stackfrontier(Frontier):
 
     def remove(self):
@@ -230,7 +230,7 @@ class Maze():
 
 
 
-a = Maze(5,5,[1,1],[4,4])    # [5,5] --> 0 to 5 row and columns
+a = Maze(8,8,[1,1],[7,7])    # [5,5] --> 0 to 5 row and columns
 b = Miner((1,1))
 c = a.findingNeighbours(b)
 d = a.maze
