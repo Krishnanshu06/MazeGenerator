@@ -1,4 +1,4 @@
-This program will use Search Algorithm to generate a randomized maze of desired size with one end and one start , the maaze conditions are:
+This program will use Search Algorithm to generate a randomized maze of desired size with one end and one start , the maze conditions are:
 - Must haev one finish and one Start
 - Must not have areas with 4 empty cells in a square
 - Must have borders

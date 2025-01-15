@@ -1,3 +1,5 @@
+#Just Doesnt Work
+
 import random
 
 class Miner():

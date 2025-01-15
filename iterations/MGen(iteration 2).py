@@ -1,3 +1,8 @@
+#Doesnt Work
+#Dont remember why
+#iter 3)) Have to start fresh after Exams
+
+
 import random
 
 class Miner():

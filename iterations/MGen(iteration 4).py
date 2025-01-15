@@ -1,7 +1,6 @@
-# 1 month after iteration 2 , works well but doesnt follow the step 3 of the Algorithm(ReadME)
-# iter 4)) Adding a simple chnage in the generator function will fix that.
-# image generation fn is made by chat gpt.
-
+#Step 3 is folowed by making small change in generator fn. but that caused creation of dots of walls 
+#Tweaking the weightages to see if we can get a better result
+#iter5)) making a condition such that the dot is not generated.
 
 
 import random
@@ -46,6 +45,10 @@ class Queuefrontier(Frontier):
             selectedCell = self.frontier[0]
             self.frontier = self.frontier[1:]   
             return selectedCell
+
+
+
+
 
 class Maze():
     def __init__(self, NoOfRows , NoOfColumns , StartCoords ,FinalCoords):
@@ -160,7 +163,7 @@ class Maze():
     def randomizeMoves(self , PossibleMoves):
 
         lis = [1,2,3,4]
-        k = random.choices(lis , weights = [10,1,1,1] , k = 1)
+        k = random.choices(lis , weights = [1,1,1,20] , k = 1)
         k = k[0]
         k = int(k)
         if PossibleMoves != []:
@@ -171,9 +174,9 @@ class Maze():
 
         else:
             return list()
-        
 
-    def grid_to_image(self,grid, pixel_size=50, cell_border=2, output_file="iter3.png"):
+
+    def grid_to_image(self,grid, pixel_size=50, cell_border=2, output_file="iter4.png"):
         from PIL import Image, ImageDraw
         """
         Converts a grid to an image, where '#' is black, ' ' is white, 'A' is red, and 'B' is green.
@@ -227,7 +230,6 @@ class Maze():
         print(f"Image saved as {output_file}")
 
 
-
     def generator(self):
 
         frontier = Stackfrontier()
@@ -240,10 +242,21 @@ class Maze():
         while True:
 
             if frontier.isEmpty():
+               for cells in self.DugCells:
+                   frontier.add(Miner(position=cells))
+
+            hasMoves = False
+
+            for cells in self.DugCells:
+                if self.possibleMoves(miner = Miner(position=cells)) != []:
+                   hasMoves = True
+
+            if hasMoves != True:
+                maz = self.maze
                 fileName = input("FileName: ")
                 fileName = fileName + '.png'
-                self.grid_to_image(self.maze , output_file=fileName)
-               
+                self.grid_to_image(grid=maz , output_file= fileName)
+                quit()
 
             CurrentCell = frontier.remove()
             print(CurrentCell.position)
@@ -265,16 +278,15 @@ class Maze():
 
 
 
-a = Maze(12,12,[1,1],[7,7])    # [5,5] --> 0 to 5 row and columns
+a = Maze(12,12,[1,1],[11,11])
 b = Miner((1,1))
 d = a.maze
 
-
-#for k in c:
-#    d[k[0]][k[1]] = ' '
 
 for row in d:
 
     print (row)
 
 a.generator()
+
+
